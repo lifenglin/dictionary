@@ -1,8 +1,9 @@
 dictionary
 ==========
 
-Example:
+## Example:
 
+```
 $arrDictionary = array();
 $arrDictionary['id']['type'] = Dictionary::UINT;
 $arrDictionary['id']['optional'] = false;
@@ -16,3 +17,4 @@ $arrParams['id'] = '123';
 $arrParams['content'] = 'abc';
 $arrParams = $objDictionary->checkParams($arrParams);
 var_dump($arrParams);
+```
