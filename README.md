@@ -3,6 +3,7 @@ dictionary
 
 ## Example:
 
+###代码
 ```
 $arrDictionary = array();
 $arrDictionary['id']['type'] = Dictionary::UINT;
@@ -17,4 +18,16 @@ $arrParams['id'] = '123';
 $arrParams['content'] = 'abc';
 $arrParams = $objDictionary->checkParams($arrParams);
 var_dump($arrParams);
+```
+
+###输出
+```
+array(3) {
+    ["id"]=>
+    int(123)
+    ["content"]=>
+    string(3) "abc"
+    ["time"]=>
+    int(1390637506)
+}
 ```
