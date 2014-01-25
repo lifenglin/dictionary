@@ -1,8 +1,5 @@
-dictionary
-==========
-
-Example:
-
+<?php
+require('Dictionary.php');
 $arrDictionary = array();
 $arrDictionary['id']['type'] = Dictionary::UINT;
 $arrDictionary['id']['optional'] = false;

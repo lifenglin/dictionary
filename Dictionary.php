@@ -25,10 +25,14 @@ class Dictionary
         foreach ($this->_arrDictionary as $strKey => $arrDictionary) {
             $strType = $arrDictionary['type'];
             $bolOptional = $arrDictionary['optional'];
+            $mixParam = $arrParams[$strKey];
             //参数未传，字典定义可选，跳过检查
             if ($bolOptional && !strlen($arrParams[$strKey])) {
-                $arrParams[$strKey] = $arrDictionary['default'];
-                continue;
+                if (strlen($arrDictionary['default'])) {
+                    $mixParam = $arrDictionary['default'];
+                } else {
+                    continue;
+                }
             }
             //检查类型
             if (self::INT === $strType) {
@@ -39,6 +43,8 @@ class Dictionary
                 $mixParam = $this->checkId($mixParam);
             } else if (self::STRING === $strType) {
                 $mixParam = strval($mixParam);
+            } else if (self::DATE === $strType) {
+                $mixParam = $this->checkDate($mixParam);
             } else {
                 //throw
             }
@@ -73,7 +79,7 @@ class Dictionary
      */
     static public function checkUint($mixParam)
     {
-        $intParam = $this->checkInt($mixParam);
+        $intParam = self::checkInt($mixParam);
         if ($intParam < 0) {
             //throw
         }
@@ -93,6 +99,21 @@ class Dictionary
         try {
             $mixParam = new MongoId($mixParam);
         } catch (exception $e) {
+            //throw
+        }
+        return $mixParam;
+    }
+
+    /**
+     * checkDate 
+     * 检查日期类型
+     * @access public
+     * @return void
+     */
+    static public function checkDate($mixParam)
+    {
+        $mixParam = strtotime($mixParam);
+        if (false === $mixParam) {
             //throw
         }
         return $mixParam;
