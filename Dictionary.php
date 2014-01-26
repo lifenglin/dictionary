@@ -14,7 +14,12 @@ class Dictionary
     {
         //检查输入
         if (!is_array($arrDictionary)) {
-            throw new InvalidArgumentException('__construct() expects parameter 1 to be array');
+            throw new \InvalidArgumentException('__construct() expects parameter 1 to be array');
+        }
+        foreach ($arrDictionary as $strKey => $mixVal) {
+            if (!in_array(strval($mixVal['type']), array(self::INT, self::UINT, self::ID, self::DATE, self::STRING))) {
+                throw new \InvalidArgumentException('undefined dictionary type');
+            }
         }
         $this->_arrDictionary = $arrDictionary;
     }
@@ -23,7 +28,7 @@ class Dictionary
     {
         //检查输入
         if (!is_array($arrParams)) {
-            throw new InvalidArgumentException('checkParams() expects parameter 1 to be array');
+            throw new \InvalidArgumentException('checkParams() expects parameter 1 to be array');
         }
         //返回参数
         $arrReturn = array();
@@ -35,6 +40,9 @@ class Dictionary
             $strType = $arrDictionary['type'];
             $bolOptional = $arrDictionary['optional'];
             $mixParam = $arrParams[$strKey];
+            if (!$bolOptional && !strlen($arrParams[$strKey])) {
+                throw new \UnexpectedValueException("$strKey is not optional");
+            }
             //参数未传，字典定义可选，跳过检查
             if ($bolOptional && !strlen($arrParams[$strKey])) {
                 if (strlen($arrDictionary['default'])) {
@@ -44,18 +52,20 @@ class Dictionary
                 }
             }
             //检查类型
-            if (self::INT === $strType) {
-                $mixParam = $this->checkInt($strKey, $mixParam);
-            } else if (self::UINT === $strType) {
-                $mixParam = $this->checkUint($strKey, $mixParam);
-            } else if (self::ID === $strType) {
-                $mixParam = $this->checkId($strKey, $mixParam);
-            } else if (self::STRING === $strType) {
-                $mixParam = strval($mixParam);
-            } else if (self::DATE === $strType) {
-                $mixParam = $this->checkDate($strKey, $mixParam);
-            } else {
-                throw new UnexpectedValueException('unexpected type');
+            try {
+                if (self::INT === $strType) {
+                    $mixParam = $this->checkInt($strKey, $mixParam);
+                } else if (self::UINT === $strType) {
+                    $mixParam = $this->checkUint($strKey, $mixParam);
+                } else if (self::ID === $strType) {
+                    $mixParam = $this->checkId($strKey, $mixParam);
+                } else if (self::STRING === $strType) {
+                    $mixParam = strval($mixParam);
+                } else if (self::DATE === $strType) {
+                    $mixParam = $this->checkDate($strKey, $mixParam);
+                }
+            } catch (\RangeException $e) {
+                throw new \UnexpectedValueException($e->getMessage());
             }
             $arrReturn[$strKey] = $mixParam;
         }
@@ -72,8 +82,14 @@ class Dictionary
      */
     static public function checkInt($strKey, $mixParam)
     {
+        if (!is_string($strKey)) {
+            throw new \InvalidArgumentException("checkInt() expects parameter 1 to be string");
+        }
+        if (!$strKey) {
+            throw new \InvalidArgumentException("checkInt() expects parameter 1 not to be empty");
+        }
         if (!ctype_digit(strval($mixParam))) {
-            throw new DomainException("$strKey is not a int");
+            throw new \RangeException("$strKey is not a int");
         }
         return intval($mixParam);
     }
@@ -88,13 +104,19 @@ class Dictionary
      */
     static public function checkUint($strKey, $mixParam)
     {
+        if (!is_string($strKey)) {
+            throw new \InvalidArgumentException("checkUint() expects parameter 1 to be string");
+        }
+        if (!$strKey) {
+            throw new \InvalidArgumentException("checkUint() expects parameter 1 not to be empty");
+        }
         try {
             $intParam = self::checkInt($strKey, $mixParam);
-        } catch (DomainException $e) {
-            throw new DomainException("$strKey is not a uint");
+        } catch (\RangeException $e) {
+            throw new \RangeException("$strKey is not a uint");
         }
         if ($intParam < 0) {
-            throw new DomainException("$strKey is not a uint and less than 0");
+            throw new \RangeException("$strKey is not a uint and less than 0");
         }
         return $intParam;
     }
@@ -109,10 +131,16 @@ class Dictionary
      */
     static public function checkId($strKey, $mixParam)
     {
+        if (!is_string($strKey)) {
+            throw new \InvalidArgumentException("checkId() expects parameter 1 to be string");
+        }
+        if (!$strKey) {
+            throw new \InvalidArgumentException("checkId() expects parameter 1 not to be empty");
+        }
         try {
             $mixParam = new MongoId($mixParam);
         } catch (MongoException $e) {
-            throw new DomainException("$strKey is not a id");
+            throw new \RangeException("$strKey is not a id");
         }
         return $mixParam;
     }
@@ -125,9 +153,15 @@ class Dictionary
      */
     static public function checkDate($strKey, $mixParam)
     {
+        if (!is_string($strKey)) {
+            throw new \InvalidArgumentException("checkDate() expects parameter 1 to be string");
+        }
+        if (!$strKey) {
+            throw new \InvalidArgumentException("checkDate() expects parameter 1 not to be empty");
+        }
         $mixParam = strtotime($mixParam);
         if (false === $mixParam) {
-            throw new DomainException("$strKey is not a date");
+            throw new \RangeException("$strKey is not a date");
         }
         return $mixParam;
     }
