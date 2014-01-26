@@ -1,4 +1,5 @@
 <?php
+use Tofu\Dictionary;
 require('Dictionary.php');
 $arrDictionary = array();
 $arrDictionary['id']['type'] = Dictionary::UINT;

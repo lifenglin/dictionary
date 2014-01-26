@@ -1,4 +1,5 @@
 <?php
+namespace Tofu;
 class Dictionary
 {
     const INT = 'int';

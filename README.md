@@ -5,6 +5,8 @@ dictionary
 
 ###代码
 ```
+use Tofu\Dictionary;
+require('Dictionary.php');
 $arrDictionary = array();
 $arrDictionary['id']['type'] = Dictionary::UINT;
 $arrDictionary['id']['optional'] = false;
