@@ -11,6 +11,6 @@ $arrDictionary['time']['optional'] = true;
 $arrDictionary['time']['default'] = 'now';
 $objDictionary = new Dictionary($arrDictionary);
 $arrParams['id'] = '123';
-$arrParams['content'] = '';
+$arrParams['content'] = 'a';
 $arrParams = $objDictionary->checkParams($arrParams);
 var_dump($arrParams);

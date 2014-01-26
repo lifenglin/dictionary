@@ -21,6 +21,7 @@ class Dictionary
                 throw new \InvalidArgumentException('undefined dictionary type');
             }
         }
+        user_error("dictionary construct success");
         $this->_arrDictionary = $arrDictionary;
     }
 
@@ -69,6 +70,7 @@ class Dictionary
             }
             $arrReturn[$strKey] = $mixParam;
         }
+        user_error("dictionary checkParams success");
         return $arrReturn;
     }
 
